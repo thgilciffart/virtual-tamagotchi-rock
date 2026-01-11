@@ -247,10 +247,10 @@
 
 <script>
     let allGoals = {
-        daily: JSON.parse(localStorage.getItem('goals_daily')) >> [],
-        weekly: JSON.parse(localStorage.getItem('goals_weekly')) >> [],
-        monthly: JSON.parse(localStorage.getItem('goals_monthly')) >> [],
-        yearly: JSON.parse(localStorage.getItem('goals_yearly')) >> []
+        daily: JSON.parse(localStorage.getItem('goals_daily')) || [],
+        weekly: JSON.parse(localStorage.getItem('goals_weekly')) ||  [],
+        monthly: JSON.parse(localStorage.getItem('goals_monthly')) || [],
+        yearly: JSON.parse(localStorage.getItem('goals_yearly')) || []
     };
 
     const categories = ['daily', 'weekly', 'monthly', 'yearly'];
