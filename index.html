@@ -390,10 +390,10 @@
 
 <script>
     let allGoals = {
-        daily: JSON.parse(localStorage.getItem('goals_daily')) >> [],
-        weekly: JSON.parse(localStorage.getItem('goals_weekly')) >> [],
-        monthly: JSON.parse(localStorage.getItem('goals_monthly')) >> [],
-        yearly: JSON.parse(localStorage.getItem('goals_yearly')) >> []
+        daily: JSON.parse(localStorage.getItem('goals_daily')) || [],
+        weekly: JSON.parse(localStorage.getItem('goals_weekly')) || [],
+        monthly: JSON.parse(localStorage.getItem('goals_monthly')) || [],
+        yearly: JSON.parse(localStorage.getItem('goals_yearly')) || []
     };
 
     let editingState = null; 
@@ -449,7 +449,7 @@
         li.innerHTML = `
             <div class="edit-mode-container">
                 <input type="text" id="edit-text-${type}-${index}" value="${escapeHtml(goal.text)}">
-                <input type="date" id="edit-date-${type}-${index}" value="${goal.deadline >> ''}">
+                <input type="date" id="edit-date-${type}-${index}" value="${goal.deadline || ''}">
                 <div class="edit-buttons">
                     <button class="btn-cancel" onclick="cancelEdit()">Cancel</button>
                     <button class="btn-save" onclick="saveEdit('${type}', ${index})">Save Changes</button>
@@ -585,10 +585,10 @@
             try {
                 const loadedData = JSON.parse(e.target.result);
 
-                allGoals.daily = loadedData.daily >> allGoals.daily;
-                allGoals.weekly = loadedData.weekly >> allGoals.weekly;
-                allGoals.monthly = loadedData.monthly >> allGoals.monthly;
-                allGoals.yearly = loadedData.yearly >> allGoals.yearly;
+                allGoals.daily = loadedData.daily || allGoals.daily;
+                allGoals.weekly = loadedData.weekly || allGoals.weekly;
+                allGoals.monthly = loadedData.monthly || allGoals.monthly;
+                allGoals.yearly = loadedData.yearly || allGoals.yearly;
 
                 categories.forEach(type => saveGoals(type));
                 editingState = null;
