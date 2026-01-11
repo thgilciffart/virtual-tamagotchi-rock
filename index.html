@@ -34,12 +34,41 @@
             max-width: 1600px;
         }
 
-        h1 {
-            margin-top: 0;
-            font-size: 1.8rem;
-            text-align: center;
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
             color: var(--text-main);
+        }
+
+        .data-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .seconday-btn {
+            background-color: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .seconday-btn:hover {
+            background-color: #eef2ff
+            border-color: var(var(--primary))
+            color: var(var(--primary))
         }
 
         .goals-grid {
@@ -54,6 +83,7 @@
         }
         @media (max-width: 600px) {
             .goals-grid { grid-template-columns: 1fr; }
+            .header-area { flex-direction: column; gap: 15px; }
         }
 
         .column-card {
@@ -202,7 +232,16 @@
 <body>
 
 <div class="container">
-    <h1>My Goals</h1>
+    <div class="header-area">
+        <h1>Goals</h1>
+
+        <div class="data-controls">
+            <button class="seconday-btn" onclick="exportData()">Export Data</button>
+            <button class="seconday-btn" onclick="document.getElementById('file-input').click()">Import data</button>
+
+            <input type="file" id="file-input" style="display: none" onchange="importData(this)">
+        </div>
+    </div>
 
     <div class="goals-grid">
 
@@ -248,7 +287,7 @@
 <script>
     let allGoals = {
         daily: JSON.parse(localStorage.getItem('goals_daily')) || [],
-        weekly: JSON.parse(localStorage.getItem('goals_weekly')) ||  [],
+        weekly: JSON.parse(localStorage.getItem('goals_weekly')) || [],
         monthly: JSON.parse(localStorage.getItem('goals_monthly')) || [],
         yearly: JSON.parse(localStorage.getItem('goals_yearly')) || []
     };
@@ -267,7 +306,6 @@
         if (!isoString) return "";
         const date = new Date(isoString);
         
-        // Added 'year: numeric' to the options
         return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + 
                ' • ' + 
                date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
@@ -322,7 +360,7 @@
         allGoals[type].push({ 
             text: text, 
             completed: false,
-            createdAt: new Date().toISOString() // Save current time
+            createdAt: new Date().toISOString()
     });
 
         saveGoals(type);
@@ -330,6 +368,49 @@
         
         inputEl.value = '';
         inputEl.focus();
+    }
+
+    window.exportData = function() {
+        const dataStr = JSON.stringify(allGoals, null, 2);
+        const blob = new Blob([dataStr], { type: "applications/json" });
+        const url = URL.createObjectURl(blob);
+
+        const now = new Date();
+        const day = String(now.getData()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = String(now.getFullYear()).slice(-2);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'goal-backup-${day}-${month}-${year}.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    window.importData = function(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const loadedData = JSON.parse(e.target.result);
+
+                allGoals.daily = loadedData.daily || all Goals.daily;
+                allGoals.weekly = loadedData.weekly || all Goals.weekly;
+                allGoals.monthly = loadedData.monthly || all Goals.monthly;
+                allGoals.yearly = loadedData.yearly || all Goals.yearly;
+
+                catergories.forEach(type => saveGoals(type));
+                renderAll();
+                alert('Data successfully loaded!');
+            } catch (err) {
+                alert('Data not loaded. Please make sure it is a valid JSON file');
+            }
+        };
+        reader.readAsText(file);
+        input.value = '';
     }
 
     categories.forEach(type => {
