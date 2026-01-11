@@ -1,254 +1,347 @@
-<!doctype html>
-<html lang="" ="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Daily Goal Tracker</title>
-        <style>
-            :root {
-                --bg-color: #f4f6f8;
-                --card-bg: #ffffff;
-                --primary: #3b82f6;
-                --text-main: #1e293b;
-                --text-muted: #64748b;
-                --border: #e2e8f0;
-                --danger: #ef4444;
-                --sucess-bg: #f0fdf4;
-                --sucess-text: #166534;
-            }
-            body {
-                font-family:
-                    system-ui,
-                    -apple-system,
-                    BlinkMacSystemFont,
-                    "Segoe UI",
-                    Roboto,
-                    Oxygen,
-                    Ubuntu,
-                    Cantarell,
-                    "Open Sans",
-                    "Helvetica Neue",
-                    sans-serif;
-                background-color: var(--bg-color);
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                min-height: 100vh;
-                margin: 0;
-                padding-top: 50px;
-                color: var(--text-main);
-            }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Tracker</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --text-main: #1e293b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success-bg: #f0fdf4;
+        }
 
-            .container {
-                background: var(--card-bg);
-                width: 100%;
-                max-width: 450px;
-                padding: 2rem;
-                border-radius: 12px;
-                box-shadow:
-                    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
 
-            h1 {
-                margin-top: 0;
-                font-size: 1.5rem;
-                text-align: center;
-                margin-bottom: 1.5rem;
-            }
+        .container {
+            width: 100%;
+            max-width: 1600px;
+        }
 
-            .input-group {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 2rem;
-            }
+        h1 {
+            margin-top: 0;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-main);
+        }
 
-            input[type="text"] {
-                flex-grow: 1;
-                padding: 10px 15px;
-                border: 1px solid var(--border);
-                border-radius: 6px;
-                font-size: 1rem;
-                outline: none;
-                transition: border-color 0.2s;
-            }
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
 
-            input[type="text"]:focus {
-                border-color: var(--primary);
-            }
+        @media (max-width: 1024px) {
+            .goals-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .goals-grid { grid-template-columns: 1fr; }
+        }
 
-            button#add-btn {
-                background-color: var(--primary);
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-weight: 600;
-                transition: opacity 0.2s;
-            }
+        .column-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
 
-            button#add-btn:hover {
-                opacity: 0.9;
-            }
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
 
-            ul {
-                list-style-type: none;
-                padding: 0;
-                margin: 0;
-            }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            background-color: #f8fafc;
+        }
 
-            li {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 12px;
-                border-bottom: 1px solid var(--border);
-                transition: background 0.2s;
-            }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            background-color: #fff;
+        }
 
-            li:last-child {
-                border-bottom: none;
-            }
+        button.add-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
 
-            li:hover {
-                background-color: #f8fafc;
-            }
+        button.add-btn:hover {
+            background-color: var(--primary-hover);
+        }
 
-            .goal-content {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                flex-grow: 1;
-                cursor: pointer;
-            }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
 
-            .goal-text {
-                font-size: 1rem;
-                transition:
-                    color 0.2s,
-                    text-decoration 0.2s;
-            }
+        li {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
 
-            .custom-checkbox {
-                width: 20px;
-                height: 20px;
-                border: 2px solid var(--border);
-                border-radius: 4px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.2s;
-            }
+        li:last-child { border-bottom: none; }
 
-            li.completed .custom-checkbox {
-                background-color: var(--primary);
-                border-color: var(--primary);
-            }
+        .li-top-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+            gap: 10px;
+        }
 
-            li.completed .custom-checkbox::after {
-                content: "✓";
-                color: white;
-                font-size: 14px;
-                font-weight: bold;
-            }
+        .goal-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            flex-grow: 1;
+            cursor: pointer;
+        }
 
-            li.completed .goal-text {
-                text-decoration: line-through;
-                color: var(--text-muted);
-            }
+        .goal-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
 
-            li.completed {
-                background-color: var(--sucess-bg);
-            }
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
 
-            .delete-btn {
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                cursor: pointer;
-                font-size: 1.2rem;
-                padding: 5px;
-                border-radius: 4px;
-                transition:
-                    color 0.2s,
-                    background 0.2s;
-            }
+        li.completed .custom-checkbox {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        li.completed .custom-checkbox::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
 
-            .delete-btn:hover {
-                color: var(--danger);
-                background-color: #fee2e2;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Today's Goals</h1>
+        li.completed .goal-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
 
+        .timestamp {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            margin-left: 32px;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 5px;
+            line-height: 1;
+        }
+
+        .delete-btn:hover { color: var(--danger); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>My Goals</h1>
+
+    <div class="goals-grid">
+
+        <div class="column-card">
+            <div class="section-title">Daily</div>
             <div class="input-group">
-                <input
-                    type="text"
-                    id="goal-input"
-                    placeholder="Enter a new goal!"
-                />
-                <button id="add-btn">Add</button>
+                <input type="text" id="input-daily" placeholder="Add daily task...">
+                <button class="add-btn" onclick="addGoal('daily')">Add</button>
             </div>
-
-            <ul id="goal-list"></ul>
+            <ul id="list-daily"></ul>
         </div>
 
-        <script>
-            const input = document.getElementById("goal-input");
-            const addBtn = document.getElementById("add-btn");
-            const list = document.getElementById("goal-list");
+        <div class="column-card">
+            <div class="section-title">Weekly</div>
+            <div class="input-group">
+                <input type="text" id="input-weekly" placeholder="Add weekly goal...">
+                <button class="add-btn" onclick="addGoal('weekly')">Add</button>
+            </div>
+            <ul id="list-weekly"></ul>
+        </div>
 
-            function escapeHtml(text) {
-                return text
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
+        <div class="column-card">
+            <div class="section-title">Monthly</div>
+            <div class="input-group">
+                <input type="text" id="input-monthly" placeholder="Add monthly goal...">
+                <button class="add-btn" onclick="addGoal('monthly')">Add</button>
+            </div>
+            <ul id="list-monthly"></ul>
+        </div>
 
-            function addGoal() {
-                const text = input.value.trim();
+        <div class="column-card">
+            <div class="section-title">Yearly</div>
+            <div class="input-group">
+                <input type="text" id="input-yearly" placeholder="Add yearly goal...">
+                <button class="add-btn" onclick="addGoal('yearly')">Add</button>
+            </div>
+            <ul id="list-yearly"></ul>
+        </div>
 
-                if (text === "") return;
+    </div>
+</div>
 
-                const li = document.createElement("li");
+<script>
+    let allGoals = {
+        daily: JSON.parse(localStorage.getItem('goals_daily')) >> [],
+        weekly: JSON.parse(localStorage.getItem('goals_weekly')) >> [],
+        monthly: JSON.parse(localStorage.getItem('goals_monthly')) >> [],
+        yearly: JSON.parse(localStorage.getItem('goals_yearly')) >> []
+    };
+
+    const categories = ['daily', 'weekly', 'monthly', 'yearly'];
+
+    function saveGoals(type) {
+        localStorage.setItem(`goals_${type}`, JSON.stringify(allGoals[type]));
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function formatTime(isoString) {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        
+        // Added 'year: numeric' to the options
+        return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + 
+               ' • ' + 
+               date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderAll() {
+        categories.forEach(type => {
+            const listEl = document.getElementById(`list-${type}`);
+            listEl.innerHTML = '';
+            
+            allGoals[type].forEach((goal, index) => {
+                const li = document.createElement('li');
+                if (goal.completed) li.classList.add('completed');
+
+                const timeDisplay = goal.createdAt ? formatTime(goal.createdAt) : "";
 
                 li.innerHTML = `
-      <div class="goal-content">
-        <div class="custom-checkbox"></div>
-        <span class="goal-text">${escapeHtml(text)}</span>
-      </div>
-      <button class="delete-btn" title="Remove">&times;</button>
-      `;
+                    <div class="li-top-row">
+                        <div class="goal-content">
+                            <div class="custom-checkbox"></div>
+                            <span class="goal-text">${escapeHtml(goal.text)}</span>
+                        </div>
+                        <button class="delete-btn" title="Remove">&times;</button>
+                    </div>
+                    ${timeDisplay ? `<div class="timestamp">Added: ${timeDisplay}</div>` : ''}
+                `;
 
-                const contentDiv = li.querySelector(".goal-content");
-                contentDiv.addEventListener("click", () => {
-                    li.classList.toggle("completed");
+                li.querySelector('.goal-content').addEventListener('click', () => {
+                    allGoals[type][index].completed = !allGoals[type][index].completed;
+                    saveGoals(type);
+                    renderAll();
                 });
 
-                const deleteBtn = li.querySelector(".delete-btn");
-                deleteBtn.addEventListener("click", (e) => {
+                li.querySelector('.delete-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    li.remove();
+                    allGoals[type].splice(index, 1);
+                    saveGoals(type);
+                    renderAll();
                 });
 
-                list.appendChild(li);
-                input.value = "";
-                input.focus();
-            }
-
-            addBtn.addEventListener("click", addGoal);
-
-            input.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") {
-                    addGoal();
-                }
+                listEl.appendChild(li);
             });
-        </script>
-    </body>
+        });
+    }
+
+    window.addGoal = function(type) {
+        const inputEl = document.getElementById(`input-${type}`);
+        const text = inputEl.value.trim();
+
+        if (text === "") return;
+
+        allGoals[type].push({ 
+            text: text, 
+            completed: false,
+            createdAt: new Date().toISOString() // Save current time
+    });
+
+        saveGoals(type);
+        renderAll();
+        
+        inputEl.value = '';
+        inputEl.focus();
+    }
+
+    categories.forEach(type => {
+        const inputEl = document.getElementById(`input-${type}`);
+        inputEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addGoal(type);
+        });
+    });
+
+    renderAll();
+
+</script>
+
+</body>
 </html>
