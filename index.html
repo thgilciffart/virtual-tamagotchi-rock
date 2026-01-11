@@ -402,7 +402,7 @@
                 allGoals.monthly = loadedData.monthly || allGoals.monthly;
                 allGoals.yearly = loadedData.yearly || allGoals.yearly;
 
-                caterories.forEach(type => saveGoals(type));
+                categories.forEach(type => saveGoals(type));
                 renderAll();
                 alert('Data successfully loaded!');
             } catch (err) {
