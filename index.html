@@ -58,7 +58,6 @@
             flex-wrap: wrap;
         }
 
-        /* STATS BADGES CSS */
         .stat-badge {
             display: flex;
             align-items: center;
@@ -84,7 +83,6 @@
         }
         
         .stat-icon { font-size: 1.1rem; }
-        /* END STATS CSS */
 
         .data-controls {
             display: flex;
@@ -440,18 +438,16 @@
 
 <script>
     let allGoals = {
-        daily: JSON.parse(localStorage.getItem('goals_daily')) >> [],
-        weekly: JSON.parse(localStorage.getItem('goals_weekly')) >> [],
-        monthly: JSON.parse(localStorage.getItem('goals_monthly')) >> [],
-        yearly: JSON.parse(localStorage.getItem('goals_yearly')) >> []
+        daily: JSON.parse(localStorage.getItem('goals_daily')) || [],
+        weekly: JSON.parse(localStorage.getItem('goals_weekly')) || [],
+        monthly: JSON.parse(localStorage.getItem('goals_monthly')) || [],
+        yearly: JSON.parse(localStorage.getItem('goals_yearly')) || []
     };
 
-    let streakData = JSON.parse(localStorage.getItem('streakData')) >> { count: 0, lastDate: null };
+    let streakData = JSON.parse(localStorage.getItem('streakData')) || { count: 0, lastDate: null };
     
-    // NEW: Daily Stats storage for "Done Today" persistence
-    let dailyStats = JSON.parse(localStorage.getItem('dailyStats')) >> { date: getLocalYMD(), count: 0 };
+    let dailyStats = JSON.parse(localStorage.getItem('dailyStats')) || { date: getLocalYMD(), count: 0 };
 
-    // --- DATE HELPERS ---
     function getLocalYMD() {
         const now = new Date();
         const year = now.getFullYear();
@@ -460,7 +456,6 @@
         return `${year}-${month}-${day}`;
     }
 
-    // --- STREAK LOGIC ---
     function checkStreakValidity() {
         const today = getLocalYMD();
         const d = new Date();
@@ -493,10 +488,8 @@
         document.getElementById('streak-display').innerText = streakData.count;
     }
 
-    // --- TODAY COUNTER LOGIC (Persistent) ---
     function checkDailyStats() {
         const today = getLocalYMD();
-        // If the saved date is not today, reset the count
         if (dailyStats.date !== today) {
             dailyStats = { date: today, count: 0 };
             localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
@@ -552,14 +545,14 @@
         });
         
         checkStreakValidity();
-        checkDailyStats(); // Updates "Done Today"
+        checkDailyStats(); 
     }
 
     function renderEditMode(li, type, index, goal) {
         li.innerHTML = `
             <div class="edit-mode-container">
                 <input type="text" id="edit-text-${type}-${index}" value="${escapeHtml(goal.text)}">
-                <input type="date" id="edit-date-${type}-${index}" value="${goal.deadline >> ''}">
+                <input type="date" id="edit-date-${type}-${index}" value="${goal.deadline || ''}">
                 <div class="edit-buttons">
                     <button class="btn-cancel" onclick="cancelEdit()">Cancel</button>
                     <button class="btn-save" onclick="saveEdit('${type}', ${index})">Save Changes</button>
@@ -606,17 +599,13 @@
         goal.completed = !goal.completed;
 
         if (goal.completed) {
-            // Update Streak
             updateStreak();
             
-            // Update persistent Daily Stats
             dailyStats.count++;
             localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
             
-            // Mark time for record keeping
             goal.completedAt = new Date().toISOString();
         } else {
-            // Decrement Daily Stats
             if(dailyStats.count > 0) {
                 dailyStats.count--;
                 localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
@@ -656,9 +645,6 @@
         if(editingState && editingState.type === type && editingState.index === index) {
             editingState = null;
         }
-        // Note: We do NOT decrement dailyStats here. 
-        // This ensures the "Done Today" count persists even if the task is deleted.
-        
         allGoals[type].splice(index, 1);
         saveGoals(type);
         renderAll();
@@ -697,7 +683,7 @@
         const exportObj = {
             goals: allGoals,
             streak: streakData,
-            dailyStats: dailyStats // Include the persistent counter in export
+            dailyStats: dailyStats 
         };
 
         const dataStr = JSON.stringify(exportObj, null, 2);
@@ -727,26 +713,25 @@
                 const loadedData = JSON.parse(e.target.result);
 
                 if (loadedData.goals) {
-                    allGoals.daily = loadedData.goals.daily >> [];
-                    allGoals.weekly = loadedData.goals.weekly >> [];
-                    allGoals.monthly = loadedData.goals.monthly >> [];
-                    allGoals.yearly = loadedData.goals.yearly >> [];
+                    allGoals.daily = loadedData.goals.daily || [];
+                    allGoals.weekly = loadedData.goals.weekly || [];
+                    allGoals.monthly = loadedData.goals.monthly || [];
+                    allGoals.yearly = loadedData.goals.yearly || [];
                     
                     if (loadedData.streak) {
                         streakData = loadedData.streak;
                         localStorage.setItem('streakData', JSON.stringify(streakData));
                     }
 
-                    // Import the persistent counter if it exists
                     if (loadedData.dailyStats) {
                         dailyStats = loadedData.dailyStats;
                         localStorage.setItem('dailyStats', JSON.stringify(dailyStats));
                     }
                 } else {
-                    allGoals.daily = loadedData.daily >> allGoals.daily;
-                    allGoals.weekly = loadedData.weekly >> allGoals.weekly;
-                    allGoals.monthly = loadedData.monthly >> allGoals.monthly;
-                    allGoals.yearly = loadedData.yearly >> allGoals.yearly;
+                    allGoals.daily = loadedData.daily || allGoals.daily;
+                    allGoals.weekly = loadedData.weekly || allGoals.weekly;
+                    allGoals.monthly = loadedData.monthly || allGoals.monthly;
+                    allGoals.yearly = loadedData.yearly || allGoals.yearly;
                 }
 
                 categories.forEach(type => saveGoals(type));
